@@ -17,7 +17,7 @@ Rest, inactivity, sleep, and breaks must be treated positively or neutrally. Dev
 
 ## v0.1.0 product goal
 
-`v0.1.0 — First Friend on iPhone` establishes the first working Friend on an iPhone Home Screen. The release is not published yet.
+`v0.1.0 — First Friend on iPhone` establishes the first working Dev Friendz widget on an iPhone Home Screen.
 
 The current goal is a complete, minimal, static visual slice that can be installed and validated before dynamic signals are introduced.
 

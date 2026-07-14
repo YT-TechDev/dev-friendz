@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Dev Friendz is a pre-release project preparing for `v0.1.0`. Security fixes are handled on the `main` branch until a release support policy exists.
+Security fixes are handled on the main branch until a formal version-support policy exists.
 
 ## Scope
 

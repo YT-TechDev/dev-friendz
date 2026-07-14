@@ -8,7 +8,7 @@ Dev Friendz is a character-first widget project. The Friend is not a chart with 
 
 ## Current status
 
-Dev Friendz is preparing for its first GitHub Release, `v0.1.0 — First Friend on iPhone`. The release has not been published yet.
+`v0.1.0 — First Friend on iPhone` establishes the first working Dev Friendz widget on an iPhone Home Screen.
 
 The current merged implementation is a minimal static ScriptWidget widget in [`main.jsx`](main.jsx).
 

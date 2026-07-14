@@ -16,52 +16,53 @@ const colors = {
 
 $render(
   <hstack
-    frame="max"
-    spacing="14"
-    padding="14"
+    frame="300,140"
+    spacing="8"
     background={colors.room}
   >
-    <zstack frame="150,130" background={colors.backWall} radius="20">
+    <zstack frame="150,120" background={colors.backWall} radius="18">
       <vstack spacing="0">
-        <roundedrect frame="150,88" color={colors.backWall} radius="20" />
-        <roundedrect frame="150,42" color={colors.floor} radius="0" />
+        <roundedrect frame="150,82" color={colors.backWall} radius="18" />
+        <roundedrect frame="150,38" color={colors.floor} radius="0" />
       </vstack>
 
-      <vstack spacing="5">
-        <roundedrect frame="68,34" color="#092d45" radius="7" />
-        <roundedrect frame="46,5" color={colors.monitor} radius="3" />
-        <roundedrect frame="96,9" color={colors.desk} radius="4" />
+      <vstack spacing="4">
+        <roundedrect frame="64,30" color="#092d45" radius="7" />
+        <roundedrect frame="42,5" color={colors.monitor} radius="3" />
+        <roundedrect frame="90,8" color={colors.desk} radius="4" />
       </vstack>
 
-      <hstack spacing="6">
-        <vstack spacing="5">
-          <circle frame="58,58" color={colors.friendShadow} />
-          <roundedrect frame="70,16" color="#0a1728" radius="8" />
+      <hstack spacing="5">
+        <vstack spacing="4">
+          <circle frame="52,52" color={colors.friendShadow} />
+          <roundedrect frame="62,13" color="#0a1728" radius="7" />
         </vstack>
         <vstack spacing="2">
-          <circle frame="12,12" color={colors.lamp} />
-          <roundedrect frame="7,42" color="#d89f55" radius="4" />
+          <circle frame="10,10" color={colors.lamp} />
+          <roundedrect frame="6,36" color="#d89f55" radius="3" />
         </vstack>
       </hstack>
 
       <vstack spacing="0">
-        <circle frame="76,76" color={colors.friend} />
-        <roundedrect frame="48,12" color={colors.friendShadow} radius="6" />
+        <circle frame="68,68" color={colors.friend} />
+        <roundedrect frame="44,10" color={colors.friendShadow} radius="5" />
       </vstack>
 
-      <vstack spacing="8">
-        <hstack spacing="16">
-          <circle frame="9,9" color={colors.eye} />
-          <circle frame="9,9" color={colors.eye} />
+      <vstack spacing="7">
+        <hstack spacing="14">
+          <circle frame="8,8" color={colors.eye} />
+          <circle frame="8,8" color={colors.eye} />
         </hstack>
-        <roundedrect frame="24,5" color={colors.eye} radius="3" />
+        <roundedrect frame="20,4" color={colors.eye} radius="2" />
       </vstack>
     </zstack>
 
-    <vstack frame="130,130" spacing="10" padding="12" background={colors.panel} radius="18">
-      <text font="caption" color={colors.muted}>DEV FRIENDZ</text>
-      <roundedrect frame="56,3" color={colors.accent} radius="2" />
-      <text font="title3" color={colors.text}>Ready when you are.</text>
-    </vstack>
+    <zstack frame="120,120" background={colors.panel} radius="16">
+      <vstack spacing="8">
+        <text font="caption" color={colors.muted}>DEV FRIENDZ</text>
+        <roundedrect frame="48,3" color={colors.accent} radius="2" />
+        <text font="headline" color={colors.text}>Ready when you are.</text>
+      </vstack>
+    </zstack>
   </hstack>
 );

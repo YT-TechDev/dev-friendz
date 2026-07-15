@@ -1,3 +1,17 @@
+const CONFIG = {
+  schedule: {
+    morningStartHour: 6,
+    codingStartHour: 10,
+    sleepingStartHour: 22
+  }
+};
+
+const DEFAULT_SCHEDULE = {
+  morningStartHour: 6,
+  codingStartHour: 10,
+  sleepingStartHour: 22
+};
+
 const colors = {
   room: "#071426",
   backWall: "#0b1f35",
@@ -35,12 +49,75 @@ function normalizeTimeSignal(rawSignal) {
   };
 }
 
-function deriveFriendState(timeSignal) {
-  if (timeSignal.hour >= 6 && timeSignal.hour < 10) {
+function normalizeSchedule(rawSchedule) {
+  if (
+    !rawSchedule ||
+    typeof rawSchedule !== "object" ||
+    Array.isArray(rawSchedule)
+  ) {
+    return { ...DEFAULT_SCHEDULE };
+  }
+
+  const {
+    morningStartHour,
+    codingStartHour,
+    sleepingStartHour
+  } = rawSchedule;
+
+  const values = [
+    morningStartHour,
+    codingStartHour,
+    sleepingStartHour
+  ];
+
+  const hasValidHours = values.every(
+    (value) =>
+      typeof value === "number" &&
+      Number.isInteger(value) &&
+      value >= 0 &&
+      value <= 23
+  );
+
+  const isAscending =
+    morningStartHour < codingStartHour &&
+    codingStartHour < sleepingStartHour;
+
+  if (!hasValidHours || !isAscending) {
+    return { ...DEFAULT_SCHEDULE };
+  }
+
+  return {
+    morningStartHour,
+    codingStartHour,
+    sleepingStartHour
+  };
+}
+
+function normalizeConfig(rawConfig) {
+  const rawSchedule =
+    rawConfig &&
+    typeof rawConfig === "object" &&
+    !Array.isArray(rawConfig)
+      ? rawConfig.schedule
+      : undefined;
+
+  return {
+    schedule: normalizeSchedule(rawSchedule)
+  };
+}
+
+function deriveFriendState(timeSignal, schedule) {
+  if (
+    timeSignal.hour >= schedule.morningStartHour &&
+    timeSignal.hour < schedule.codingStartHour
+  ) {
     return FRIEND_STATES.MORNING;
   }
 
-  if (timeSignal.hour >= 10 && timeSignal.hour < 22) {
+  if (
+    timeSignal.hour >= schedule.codingStartHour &&
+    timeSignal.hour < schedule.sleepingStartHour
+  ) {
     return FRIEND_STATES.CODING;
   }
 
@@ -188,9 +265,10 @@ function derivePresentation(friendState, dialogue) {
   };
 }
 
+const config = normalizeConfig(CONFIG);
 const rawTimeSignal = getRawTimeSignal();
 const timeSignal = normalizeTimeSignal(rawTimeSignal);
-const friendState = deriveFriendState(timeSignal);
+const friendState = deriveFriendState(timeSignal, config.schedule);
 const dialogue = deriveDialogue(friendState, timeSignal.localDateKey);
 const presentation = derivePresentation(friendState, dialogue);
 

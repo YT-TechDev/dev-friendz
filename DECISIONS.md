@@ -12,7 +12,7 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D002
 
 - Status: Accepted
-- Decision: Medium is the first and only supported widget size for v0.1.0.
+- Decision: Medium is the only supported widget size through the current v0.2.0 implementation.
 - Rationale: The current implementation and owner validation target the Medium widget size.
 - Consequences: Documentation and validation must not claim Small or Large support.
 
@@ -26,9 +26,9 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D004
 
 - Status: Accepted
-- Decision: v0.1.0 installation uses copy and paste into ScriptWidget.
+- Decision: Installation and updates use copy and paste from merged `main.jsx` into ScriptWidget.
 - Rationale: Repeated `.jsx` imports may create duplicate scripts, while copy and paste updates the intended script directly.
-- Consequences: `.swt` packaging and import-based installation are not documented as supported for v0.1.0.
+- Consequences: `.swt` packaging and import-based installation are not documented as supported for the current installation workflow.
 
 ## D005
 
@@ -49,19 +49,19 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 - Status: Accepted
 - Decision: Establish a static visual slice before dynamic signals.
 - Rationale: A working character-first widget should be validated before adding data complexity.
-- Consequences: Current documentation must describe the widget as static and label dynamic behavior as future work.
+- Consequences: The v0.1.0 static slice remains the visual foundation; later deterministic local signals may extend it without weakening the character-first hierarchy.
 
 ## D008
 
 - Status: Accepted
-- Decision: v0.1.0 requires no backend.
-- Rationale: The current widget is local and static.
-- Consequences: Backend services, cloud synchronization, and server setup are out of scope for v0.1.0.
+- Decision: The current v0.2.0 widget requires no backend.
+- Rationale: The current widget is local and deterministic.
+- Consequences: Backend services, cloud synchronization, and server setup are out of scope for the current widget.
 
 ## D009
 
 - Status: Accepted
-- Decision: v0.1.0 requires no account or credential.
+- Decision: The current v0.2.0 widget requires no account or credential.
 - Rationale: The current widget makes no authenticated requests and has no private integration.
 - Consequences: Tokens, PATs, API secrets, credentials, and private repository data must not be committed or required.
 
@@ -92,3 +92,39 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 - Decision: Runtime-sensitive changes require real-device validation before merging.
 - Rationale: ScriptWidget behavior must be confirmed on device, not only by source inspection.
 - Consequences: Pull Requests that affect rendering or runtime behavior must report device checks or remaining owner checks.
+
+
+## D014
+
+- Status: Accepted
+- Decision: Device-local JavaScript date and hour are the initial runtime signal for daily rhythm.
+- Rationale: Device-local time enables deterministic offline behavior without external time services.
+- Consequences: Timezone is inherited from the device, no remote timezone lookup is required, and direct time access remains isolated.
+
+## D015
+
+- Status: Accepted
+- Decision: v0.2.0 uses exactly `morning`, `coding`, and `sleeping`, and normalized schedule boundaries determine the half-open intervals.
+- Rationale: Three explicit states are small, deterministic, complete, and character-readable.
+- Consequences: Every local hour maps to exactly one state, state names remain stable for current presentation and dialogue maps, and adding another state requires a future explicit design decision.
+
+## D016
+
+- Status: Accepted
+- Decision: Supported user configuration is only the three schedule start hours in `main.jsx`, and invalid schedules fall back atomically to `{6, 10, 22}`.
+- Rationale: Narrow local configuration is understandable and safe without settings UI or persistence.
+- Consequences: There is no partial fallback, coercion, clamping, sorting, external config, or Widget Parameter support; config normalization precedes domain-state derivation.
+
+## D017
+
+- Status: Accepted
+- Decision: Dialogue is selected deterministically from local calendar date and effective Friend state.
+- Rationale: Deterministic dialogue prevents refresh flicker without storage, networking, or uncontrolled randomness.
+- Consequences: The same local date and state produce the same line, dialogue may vary across dates, and `Math.random()` and persistence are unnecessary.
+
+## D018
+
+- Status: Accepted
+- Decision: `DEV_OVERRIDE_STATE` is development/testing-only, exists outside `CONFIG`, and is committed as `null`.
+- Rationale: All states must be reproducible for device validation without exposing a user-facing forced-state feature.
+- Consequences: Only temporary local validation copies use forced values, unsupported override values preserve normal derived behavior, and release and installation source must keep `null`.

@@ -6,6 +6,9 @@ const CONFIG = {
   }
 };
 
+const DEV_OVERRIDE_STATE = null;
+// Temporary validation values: "morning", "coding", "sleeping"
+
 const DEFAULT_SCHEDULE = {
   morningStartHour: 6,
   codingStartHour: 10,
@@ -122,6 +125,18 @@ function deriveFriendState(timeSignal, schedule) {
   }
 
   return FRIEND_STATES.SLEEPING;
+}
+
+function resolveEffectiveFriendState(derivedState, overrideState) {
+  if (
+    overrideState === FRIEND_STATES.MORNING ||
+    overrideState === FRIEND_STATES.CODING ||
+    overrideState === FRIEND_STATES.SLEEPING
+  ) {
+    return overrideState;
+  }
+
+  return derivedState;
 }
 
 const VISUAL_STATES = {
@@ -268,9 +283,22 @@ function derivePresentation(friendState, dialogue) {
 const config = normalizeConfig(CONFIG);
 const rawTimeSignal = getRawTimeSignal();
 const timeSignal = normalizeTimeSignal(rawTimeSignal);
-const friendState = deriveFriendState(timeSignal, config.schedule);
-const dialogue = deriveDialogue(friendState, timeSignal.localDateKey);
-const presentation = derivePresentation(friendState, dialogue);
+const derivedFriendState = deriveFriendState(
+  timeSignal,
+  config.schedule
+);
+const effectiveFriendState = resolveEffectiveFriendState(
+  derivedFriendState,
+  DEV_OVERRIDE_STATE
+);
+const dialogue = deriveDialogue(
+  effectiveFriendState,
+  timeSignal.localDateKey
+);
+const presentation = derivePresentation(
+  effectiveFriendState,
+  dialogue
+);
 
 $render(
   <hstack

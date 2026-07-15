@@ -42,10 +42,112 @@ function deriveFriendState(timeSignal) {
   return FRIEND_STATES.SLEEPING;
 }
 
+const VISUAL_STATES = {
+  [FRIEND_STATES.MORNING]: {
+    room: {
+      backWallColor: "#143454",
+      floorColor: "#183d58"
+    },
+    monitor: {
+      screenColor: "#0f3a51",
+      glowFrame: "36,4",
+      glowColor: "#8fd8d0"
+    },
+    lamp: {
+      bulbFrame: "14,14",
+      bulbColor: "#ffd98a",
+      standColor: "#d89f55"
+    },
+    friend: {
+      bodyFrame: "66,68",
+      bodyRadius: "33",
+      bodyColor: colors.friend,
+      shadowFrame: "44,10",
+      shadowColor: colors.friendShadow,
+      baseFrame: "60,12",
+      baseColor: "#0a1728"
+    },
+    face: {
+      eyeFrame: "8,10",
+      eyeRadius: "4",
+      eyeSpacing: "15",
+      mouthFrame: "20,4",
+      mouthRadius: "2"
+    }
+  },
+  [FRIEND_STATES.CODING]: {
+    room: {
+      backWallColor: colors.backWall,
+      floorColor: colors.floor
+    },
+    monitor: {
+      screenColor: "#0a3958",
+      glowFrame: "54,7",
+      glowColor: colors.monitor
+    },
+    lamp: {
+      bulbFrame: "10,10",
+      bulbColor: colors.lamp,
+      standColor: "#d89f55"
+    },
+    friend: {
+      bodyFrame: "64,70",
+      bodyRadius: "31",
+      bodyColor: colors.friend,
+      shadowFrame: "46,9",
+      shadowColor: colors.friendShadow,
+      baseFrame: "62,13",
+      baseColor: "#0a1728"
+    },
+    face: {
+      eyeFrame: "10,6",
+      eyeRadius: "3",
+      eyeSpacing: "12",
+      mouthFrame: "18,4",
+      mouthRadius: "2"
+    }
+  },
+  [FRIEND_STATES.SLEEPING]: {
+    room: {
+      backWallColor: "#08172a",
+      floorColor: "#0b1d32"
+    },
+    monitor: {
+      screenColor: "#071d2f",
+      glowFrame: "28,3",
+      glowColor: "#406f7a"
+    },
+    lamp: {
+      bulbFrame: "8,8",
+      bulbColor: "#8e7857",
+      standColor: "#765f47"
+    },
+    friend: {
+      bodyFrame: "78,48",
+      bodyRadius: "24",
+      bodyColor: "#4db9b4",
+      shadowFrame: "58,8",
+      shadowColor: "#1a5661",
+      baseFrame: "72,11",
+      baseColor: "#081323"
+    },
+    face: {
+      eyeFrame: "12,3",
+      eyeRadius: "2",
+      eyeSpacing: "12",
+      mouthFrame: "16,3",
+      mouthRadius: "2"
+    }
+  }
+};
+
 function derivePresentation(friendState) {
+  const visual = VISUAL_STATES[friendState] || VISUAL_STATES[FRIEND_STATES.SLEEPING];
+
   return {
     friendState,
-    dialogue: "Ready when you are."
+    dialogue: "Ready when you are.",
+    visual
   };
 }
 
@@ -62,38 +164,38 @@ $render(
   >
     <zstack frame="150,120" background={colors.backWall} radius="18">
       <vstack spacing="0">
-        <roundedrect frame="150,82" color={colors.backWall} radius="18" />
-        <roundedrect frame="150,38" color={colors.floor} radius="0" />
+        <roundedrect frame="150,82" color={presentation.visual.room.backWallColor} radius="18" />
+        <roundedrect frame="150,38" color={presentation.visual.room.floorColor} radius="0" />
       </vstack>
 
       <vstack spacing="4">
-        <roundedrect frame="64,30" color="#092d45" radius="7" />
-        <roundedrect frame="42,5" color={colors.monitor} radius="3" />
+        <roundedrect frame="64,30" color={presentation.visual.monitor.screenColor} radius="7" />
+        <roundedrect frame={presentation.visual.monitor.glowFrame} color={presentation.visual.monitor.glowColor} radius="3" />
         <roundedrect frame="90,8" color={colors.desk} radius="4" />
       </vstack>
 
       <hstack spacing="5">
         <vstack spacing="4">
-          <circle frame="52,52" color={colors.friendShadow} />
-          <roundedrect frame="62,13" color="#0a1728" radius="7" />
+          <roundedrect frame={presentation.visual.friend.shadowFrame} color={presentation.visual.friend.shadowColor} radius="5" />
+          <roundedrect frame={presentation.visual.friend.baseFrame} color={presentation.visual.friend.baseColor} radius="7" />
         </vstack>
         <vstack spacing="2">
-          <circle frame="10,10" color={colors.lamp} />
-          <roundedrect frame="6,36" color="#d89f55" radius="3" />
+          <circle frame={presentation.visual.lamp.bulbFrame} color={presentation.visual.lamp.bulbColor} />
+          <roundedrect frame="6,36" color={presentation.visual.lamp.standColor} radius="3" />
         </vstack>
       </hstack>
 
       <vstack spacing="0">
-        <circle frame="68,68" color={colors.friend} />
-        <roundedrect frame="44,10" color={colors.friendShadow} radius="5" />
+        <roundedrect frame={presentation.visual.friend.bodyFrame} color={presentation.visual.friend.bodyColor} radius={presentation.visual.friend.bodyRadius} />
+        <roundedrect frame={presentation.visual.friend.shadowFrame} color={presentation.visual.friend.shadowColor} radius="5" />
       </vstack>
 
       <vstack spacing="7">
-        <hstack spacing="14">
-          <circle frame="8,8" color={colors.eye} />
-          <circle frame="8,8" color={colors.eye} />
+        <hstack spacing={presentation.visual.face.eyeSpacing}>
+          <roundedrect frame={presentation.visual.face.eyeFrame} color={colors.eye} radius={presentation.visual.face.eyeRadius} />
+          <roundedrect frame={presentation.visual.face.eyeFrame} color={colors.eye} radius={presentation.visual.face.eyeRadius} />
         </hstack>
-        <roundedrect frame="20,4" color={colors.eye} radius="2" />
+        <roundedrect frame={presentation.visual.face.mouthFrame} color={colors.eye} radius={presentation.visual.face.mouthRadius} />
       </vstack>
     </zstack>
 

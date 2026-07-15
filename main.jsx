@@ -14,6 +14,46 @@ const colors = {
   accent: "#7fffd4"
 };
 
+const FRIEND_STATES = {
+  MORNING: "morning",
+  CODING: "coding",
+  SLEEPING: "sleeping"
+};
+
+function getRawTimeSignal() {
+  return new Date();
+}
+
+function normalizeTimeSignal(rawSignal) {
+  return {
+    hour: rawSignal.getHours()
+  };
+}
+
+function deriveFriendState(timeSignal) {
+  if (timeSignal.hour >= 6 && timeSignal.hour < 10) {
+    return FRIEND_STATES.MORNING;
+  }
+
+  if (timeSignal.hour >= 10 && timeSignal.hour < 22) {
+    return FRIEND_STATES.CODING;
+  }
+
+  return FRIEND_STATES.SLEEPING;
+}
+
+function derivePresentation(friendState) {
+  return {
+    friendState,
+    dialogue: "Ready when you are."
+  };
+}
+
+const rawTimeSignal = getRawTimeSignal();
+const timeSignal = normalizeTimeSignal(rawTimeSignal);
+const friendState = deriveFriendState(timeSignal);
+const presentation = derivePresentation(friendState);
+
 $render(
   <hstack
     frame="300,140"
@@ -61,7 +101,7 @@ $render(
       <vstack spacing="8">
         <text font="caption" color={colors.muted}>DEV FRIENDZ</text>
         <roundedrect frame="48,3" color={colors.accent} radius="2" />
-        <text font="headline" color={colors.text}>Ready when you are.</text>
+        <text font="headline" color={colors.text}>{presentation.dialogue}</text>
       </vstack>
     </zstack>
   </hstack>

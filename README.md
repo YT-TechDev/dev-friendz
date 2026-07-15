@@ -6,81 +6,177 @@ Tiny companions powered by your developer life.
 
 Dev Friendz is a character-first widget project. The Friend is not a chart with eyes; it is a small companion whose room, mood, and words should eventually reflect healthy developer rhythms. Developer activity is supporting context, not the whole interface.
 
-## Current status
+## Current behavior
 
-`v0.1.0 — First Friend on iPhone` establishes the first working Dev Friendz widget on an iPhone Home Screen.
-
-The current merged implementation is a minimal static ScriptWidget widget in [`main.jsx`](main.jsx).
-
-## Current runtime and supported size
+The current merged implementation provides the v0.2.0 daily-rhythm feature set in [`main.jsx`](main.jsx).
 
 - Runtime: ScriptWidget
 - Supported widget size: Medium only
 - Implementation boundary: one [`main.jsx`](main.jsx) file
+- Layout: one Friend, one room, and a two-panel character-and-dialogue presentation
+- Rendering: code-based ScriptWidget shapes with no required image assets
+- Frame: root `300,140` Medium layout
+- Rhythm: device-local deterministic daily states named `morning`, `coding`, and `sleeping`
+- Visuals: state-specific non-color cues while preserving the same Friend and room identity
+- Dialogue: deterministic contextual dialogue selected from the local calendar date and effective Friend state
+- Stability: the same local date and effective state produce the same dialogue line
+- Privacy: no network request, backend, account, authentication, token, PAT, API key, or private credential
 
-## Current verified features
+Owner-provided real-device validation covered all three states in ScriptWidget Medium Preview, a Medium Home Screen widget, readable dialogue, recognizable Friend and room identity, and airplane-mode rendering. These were owner-provided checks, not checks performed by an implementation agent.
 
-The current widget provides:
+## Daily states
 
-- one static Friend
-- one static room
-- one dialogue: `Ready when you are.`
-- code-based shapes only
-- no required image assets
-- no network requests
-- no backend
-- no account or authentication
-- no private credentials
-- no configuration interface
-- no time-based state changes
-- no GitHub integration
-- no weather or calendar integration
-- no multiple Friendz
-- no animation or interaction
+The Friend currently has exactly three states. The default schedule uses these half-open intervals:
 
-Owner-controlled real-device validation already completed:
+- `morning`: `[6, 10)` — open eyes, an upright awake silhouette, brighter room treatment, calmer monitor emphasis, and a gentle start-of-day presentation.
+- `coding`: `[10, 22)` — focused narrower eyes, an upright/focused silhouette, active monitor emphasis, and calm companion presentation without metrics or productivity pressure.
+- `sleeping`: `[22, 24) ∪ [0, 6)` — closed horizontal eyes, a lowered and wider resting silhouette, subdued monitor, calmer/darker room treatment, and positive rest presentation.
 
-- ScriptWidget parsing: PASS
-- in-app Medium Preview: PASS
-- Medium Home Screen rendering: PASS
-- visible clipping: none observed
-- airplane-mode rendering: PASS
+Configured start hours may alter the boundaries, but every local hour maps to one of `morning`, `coding`, or `sleeping`. Morning, coding, and sleeping are all normal companion states; coding is not treated as more valuable than rest or the start of the day.
 
-The exact iPhone model, iOS version, and ScriptWidget version were not recorded.
+The current dialogue pools are state-specific:
+
+- Morning: `Morning. Take it easy.` / `A gentle start.`
+- Coding: `I'll keep you company.` / `One step at a time.`
+- Sleeping: `Good work. Time to rest.` / `The room can wait.`
+
+## Schedule configuration
+
+Users edit the supported schedule values directly in [`main.jsx`](main.jsx):
+
+```js
+const CONFIG = {
+  schedule: {
+    morningStartHour: 6,
+    codingStartHour: 10,
+    sleepingStartHour: 22
+  }
+};
+```
+
+Only these three keys are supported:
+
+- `CONFIG.schedule.morningStartHour`
+- `CONFIG.schedule.codingStartHour`
+- `CONFIG.schedule.sleepingStartHour`
+
+A valid schedule requires all three values to be JavaScript numbers, integers, within `0` through `23`, and strictly ascending:
+
+```text
+0 <= morningStartHour < codingStartHour < sleepingStartHour <= 23
+```
+
+State intervals are half-open:
+
+```text
+morning:  [morningStartHour, codingStartHour)
+coding:   [codingStartHour, sleepingStartHour)
+sleeping: [sleepingStartHour, 24) ∪ [0, morningStartHour)
+```
+
+A valid custom example is:
+
+```js
+{
+  morningStartHour: 7,
+  codingStartHour: 11,
+  sleepingStartHour: 23
+}
+```
+
+Invalid schedule input falls back atomically to the complete default schedule:
+
+```js
+{
+  morningStartHour: 6,
+  codingStartHour: 10,
+  sleepingStartHour: 22
+}
+```
+
+Invalid examples include string values such as `"6"`, decimal values such as `6.5`, out-of-range values such as `24`, equal boundaries, descending boundaries, and missing values. All invalid cases use the entire default `{6, 10, 22}` schedule. The widget does not perform partial fallback, string conversion, rounding, clamping, sorting, or an error panel for invalid config.
+
+There are no supported graphical settings, external config files, Widget Parameters, timezone settings, custom dialogue settings, themes, Friend names, or localization settings.
+
+## Development state override
+
+The development override is testing-only and is not supported user configuration.
+
+```js
+const DEV_OVERRIDE_STATE = null;
+```
+
+- The committed/default value is `null`.
+- Temporary local test values are `"morning"`, `"coding"`, and `"sleeping"`.
+- The override is outside `CONFIG`.
+- Unknown values preserve normal time-derived state behavior.
+- Normal installation and release source must keep `DEV_OVERRIDE_STATE` as `null`.
+- Temporary validation edits must not be committed.
+- Users should not leave a forced state enabled for normal use.
 
 ## Installation
 
-Use only merged code from the repository's `main` branch. Do not treat unfinished feature branches as installation sources.
+Use only merged code from the repository's `main` branch. Feature branches are not installation sources. Copy and paste is the supported workflow.
 
 1. Install and open ScriptWidget on an iPhone.
-2. Create a new script or open an existing Dev Friendz script.
-3. Open the merged [`main.jsx`](main.jsx) from the repository's `main` branch.
-4. Copy the complete file contents.
-5. Replace the existing ScriptWidget script contents.
-6. Select Medium in the ScriptWidget Preview and run it.
-7. Add or refresh a Medium ScriptWidget widget on the Home Screen and select the Dev Friendz script.
+2. Create or open the Dev Friendz script.
+3. Open the complete merged [`main.jsx`](main.jsx) from the repository `main` branch.
+4. Review the supported `CONFIG.schedule` values.
+5. Confirm `DEV_OVERRIDE_STATE` is `null`.
+6. Copy the complete file.
+7. Replace the ScriptWidget script contents.
+8. Run ScriptWidget Medium Preview.
+9. Add or refresh a Medium Home Screen widget using that script.
 
-Repeated `.jsx` imports may create duplicate scripts, so copy and paste is the supported v0.1.0 workflow. iCloud for Windows is not required. `.swt` packaging is not currently provided.
+Repeated `.jsx` imports may create duplicate scripts, so copy and paste is the supported workflow. iCloud for Windows is not required. `.swt` packaging is not provided.
 
-## Updating an existing installation
+## Updating from v0.1.0
 
-To update Dev Friendz for v0.1.0, repeat the same copy-and-paste workflow with the latest merged [`main.jsx`](main.jsx) from the `main` branch. Replace the entire existing ScriptWidget script so the installed code matches the repository source.
+To update an existing v0.1.0 installation:
 
-## Configuration status
+1. Open the latest merged [`main.jsx`](main.jsx).
+2. Review or preserve desired supported schedule values.
+3. Replace the existing ScriptWidget script contents.
+4. Confirm `DEV_OVERRIDE_STATE` is `null`.
+5. Run Medium Preview.
+6. Refresh or re-add the Medium Home Screen widget.
 
-v0.1.0 has no supported user configuration surface. Editable Friend names, schedules, themes, localization, widget parameters, and external configuration files are not available in the current widget.
+Replacing the script may overwrite prior manual edits. Only supported schedule values should be intentionally preserved.
 
 ## Privacy and offline behavior
 
-The current widget is static and offline-friendly. It makes no network requests, requires no backend, requires no account, and uses no private credentials. Airplane-mode rendering has been validated by the owner.
+The current widget:
+
+- reads device-local date and hour only for state and dialogue derivation
+- makes no network requests
+- requires no backend
+- requires no account or authentication
+- requires no token, PAT, API key, or private credential
+- does not read or collect developer activity
+- does not access GitHub
+- does not use weather or calendar data
+- continues rendering in airplane mode, as owner-provided validation confirmed
 
 ## Current limitations
 
 - Medium is the only supported widget size.
-- The Friend, room, and dialogue are static.
-- There are no dynamic states, animations, interactions, or integrations.
-- There is no configuration interface.
-- Runtime-sensitive changes still require source review and real-device validation before merge.
+- There is one Friend.
+- There is one room.
+- Current state names are exactly `morning`, `coding`, and `sleeping`.
+- Schedule editing requires source-code changes in [`main.jsx`](main.jsx).
+- There is no graphical settings UI.
+- There is no localization.
+- There are no GitHub signals.
+- There are no weather or calendar signals.
+- There is no animation.
+- There is no tap interaction.
+- There are no multiple Friendz.
+- There are no gifts.
+- There is no growth/economy system.
+- There are no accounts.
+- There is no cloud synchronization.
+- There is no native WidgetKit implementation.
+- There is no external Character Pack or custom-character system.
 
 ## Development workflow
 
@@ -105,14 +201,14 @@ Never commit secrets, personal credentials, private repository data, or AI sessi
 
 ## Future directions
 
-The following capabilities are planned or exploratory. They do not exist in the current v0.1.0 widget:
+The following directions are planned or exploratory. They do not exist in the current widget and are not committed next-version features:
 
-- deterministic daily states
-- contextual dialogue
-- configuration
-- public or low-risk GitHub signals
+- public or low-risk developer signals
 - additional Friendz or community content
-- possible native WidgetKit support
+- additional widget-size presentations
+- supported interactions where the platform allows them
+- replaceable character presentation or Character Packs
+- possible native WidgetKit implementation
 
 ## License
 

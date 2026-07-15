@@ -25,8 +25,13 @@ function getRawTimeSignal() {
 }
 
 function normalizeTimeSignal(rawSignal) {
+  const year = rawSignal.getFullYear();
+  const month = rawSignal.getMonth() + 1;
+  const day = rawSignal.getDate();
+
   return {
-    hour: rawSignal.getHours()
+    hour: rawSignal.getHours(),
+    localDateKey: year * 10000 + month * 100 + day
   };
 }
 
@@ -141,12 +146,44 @@ const VISUAL_STATES = {
   }
 };
 
-function derivePresentation(friendState) {
+const DIALOGUE_POOLS = {
+  [FRIEND_STATES.MORNING]: [
+    "Morning. Take it easy.",
+    "A gentle start."
+  ],
+  [FRIEND_STATES.CODING]: [
+    "I'll keep you company.",
+    "One step at a time."
+  ],
+  [FRIEND_STATES.SLEEPING]: [
+    "Good work. Time to rest.",
+    "The room can wait."
+  ]
+};
+
+const DIALOGUE_STATE_OFFSETS = {
+  [FRIEND_STATES.MORNING]: 0,
+  [FRIEND_STATES.CODING]: 1,
+  [FRIEND_STATES.SLEEPING]: 2
+};
+
+function deriveDialogue(friendState, localDateKey) {
+  const effectiveState = DIALOGUE_POOLS[friendState]
+    ? friendState
+    : FRIEND_STATES.SLEEPING;
+  const pool = DIALOGUE_POOLS[effectiveState];
+  const offset = DIALOGUE_STATE_OFFSETS[effectiveState];
+  const index = (localDateKey + offset) % pool.length;
+
+  return pool[index];
+}
+
+function derivePresentation(friendState, dialogue) {
   const visual = VISUAL_STATES[friendState] || VISUAL_STATES[FRIEND_STATES.SLEEPING];
 
   return {
     friendState,
-    dialogue: "Ready when you are.",
+    dialogue,
     visual
   };
 }
@@ -154,7 +191,8 @@ function derivePresentation(friendState) {
 const rawTimeSignal = getRawTimeSignal();
 const timeSignal = normalizeTimeSignal(rawTimeSignal);
 const friendState = deriveFriendState(timeSignal);
-const presentation = derivePresentation(friendState);
+const dialogue = deriveDialogue(friendState, timeSignal.localDateKey);
+const presentation = derivePresentation(friendState, dialogue);
 
 $render(
   <hstack

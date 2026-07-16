@@ -169,8 +169,40 @@ function resolveEffectiveFriendState(derivedState, overrideState) {
   return derivedState;
 }
 
-const VISUAL_STATES = {
-  [FRIEND_STATES.MORNING]: {
+const VISUAL_MOMENTS = {
+  [FRIEND_MOMENTS.WAKING]: {
+    room: {
+      backWallColor: "#12304d",
+      floorColor: "#16384f"
+    },
+    monitor: {
+      screenColor: "#0d3045",
+      glowFrame: "24,3",
+      glowColor: "#78bdb9"
+    },
+    lamp: {
+      bulbFrame: "12,12",
+      bulbColor: "#f2c979",
+      standColor: "#c89150"
+    },
+    friend: {
+      bodyFrame: "68,62",
+      bodyRadius: "31",
+      bodyColor: colors.friend,
+      shadowFrame: "46,9",
+      shadowColor: colors.friendShadow,
+      baseFrame: "62,12",
+      baseColor: "#0a1728"
+    },
+    face: {
+      eyeFrame: "9,6",
+      eyeRadius: "3",
+      eyeSpacing: "14",
+      mouthFrame: "18,3",
+      mouthRadius: "2"
+    }
+  },
+  [FRIEND_MOMENTS.GENTLE_START]: {
     room: {
       backWallColor: "#143454",
       floorColor: "#183d58"
@@ -202,7 +234,7 @@ const VISUAL_STATES = {
       mouthRadius: "2"
     }
   },
-  [FRIEND_STATES.CODING]: {
+  [FRIEND_MOMENTS.FOCUSED]: {
     room: {
       backWallColor: colors.backWall,
       floorColor: colors.floor
@@ -234,7 +266,71 @@ const VISUAL_STATES = {
       mouthRadius: "2"
     }
   },
-  [FRIEND_STATES.SLEEPING]: {
+  [FRIEND_MOMENTS.QUIET_BREAK]: {
+    room: {
+      backWallColor: colors.backWall,
+      floorColor: colors.floor
+    },
+    monitor: {
+      screenColor: "#0a3049",
+      glowFrame: "34,4",
+      glowColor: "#72cfc4"
+    },
+    lamp: {
+      bulbFrame: "11,11",
+      bulbColor: "#e8bd70",
+      standColor: "#c89150"
+    },
+    friend: {
+      bodyFrame: "68,64",
+      bodyRadius: "30",
+      bodyColor: colors.friend,
+      shadowFrame: "48,9",
+      shadowColor: colors.friendShadow,
+      baseFrame: "64,12",
+      baseColor: "#0a1728"
+    },
+    face: {
+      eyeFrame: "8,8",
+      eyeRadius: "4",
+      eyeSpacing: "14",
+      mouthFrame: "22,3",
+      mouthRadius: "2"
+    }
+  },
+  [FRIEND_MOMENTS.WINDING_DOWN]: {
+    room: {
+      backWallColor: "#0a1d32",
+      floorColor: "#10263a"
+    },
+    monitor: {
+      screenColor: "#082438",
+      glowFrame: "20,3",
+      glowColor: "#557f87"
+    },
+    lamp: {
+      bulbFrame: "9,9",
+      bulbColor: "#a58b62",
+      standColor: "#80694f"
+    },
+    friend: {
+      bodyFrame: "72,56",
+      bodyRadius: "26",
+      bodyColor: "#51c2bb",
+      shadowFrame: "52,8",
+      shadowColor: "#1c626b",
+      baseFrame: "68,11",
+      baseColor: "#081323"
+    },
+    face: {
+      eyeFrame: "10,5",
+      eyeRadius: "3",
+      eyeSpacing: "13",
+      mouthFrame: "16,3",
+      mouthRadius: "2"
+    }
+  },
+  [FRIEND_MOMENTS.DEEP_REST]: {
     room: {
       backWallColor: "#08172a",
       floorColor: "#0b1d32"
@@ -314,7 +410,9 @@ function deriveDialogue(friendState, localDateKey) {
 }
 
 function derivePresentation(friendState, friendMoment, dialogue) {
-  const visual = VISUAL_STATES[friendState] || VISUAL_STATES[FRIEND_STATES.SLEEPING];
+  const visual =
+    VISUAL_MOMENTS[friendMoment] ||
+    VISUAL_MOMENTS[FRIEND_MOMENTS.DEEP_REST];
 
   return {
     friendState,

@@ -364,25 +364,13 @@ const VISUAL_MOMENTS = {
   }
 };
 
-const DIALOGUE_POOLS = {
-  [FRIEND_STATES.MORNING]: [
-    "Morning. Take it easy.",
-    "A gentle start."
-  ],
-  [FRIEND_STATES.CODING]: [
-    "I'll keep you company.",
-    "One step at a time."
-  ],
-  [FRIEND_STATES.SLEEPING]: [
-    "Good work. Time to rest.",
-    "The room can wait."
-  ]
-};
-
-const DIALOGUE_STATE_OFFSETS = {
-  [FRIEND_STATES.MORNING]: 0,
-  [FRIEND_STATES.CODING]: 1,
-  [FRIEND_STATES.SLEEPING]: 2
+const DIALOGUE_BY_MOMENT = {
+  [FRIEND_MOMENTS.WAKING]: "Morning. Take it easy.",
+  [FRIEND_MOMENTS.GENTLE_START]: "A gentle start.",
+  [FRIEND_MOMENTS.FOCUSED]: "I'll keep you company.",
+  [FRIEND_MOMENTS.QUIET_BREAK]: "A small pause is okay.",
+  [FRIEND_MOMENTS.WINDING_DOWN]: "The room can wait.",
+  [FRIEND_MOMENTS.DEEP_REST]: "Good work. Time to rest."
 };
 
 function deriveFriendMoment(friendState, localDateKey) {
@@ -398,15 +386,11 @@ function deriveFriendMoment(friendState, localDateKey) {
   return pool[index];
 }
 
-function deriveDialogue(friendState, localDateKey) {
-  const effectiveState = DIALOGUE_POOLS[friendState]
-    ? friendState
-    : FRIEND_STATES.SLEEPING;
-  const pool = DIALOGUE_POOLS[effectiveState];
-  const offset = DIALOGUE_STATE_OFFSETS[effectiveState];
-  const index = (localDateKey + offset) % pool.length;
-
-  return pool[index];
+function deriveDialogue(friendMoment) {
+  return (
+    DIALOGUE_BY_MOMENT[friendMoment] ||
+    DIALOGUE_BY_MOMENT[FRIEND_MOMENTS.DEEP_REST]
+  );
 }
 
 function derivePresentation(friendState, friendMoment, dialogue) {
@@ -437,10 +421,7 @@ const derivedFriendMoment = deriveFriendMoment(
   effectiveFriendState,
   timeSignal.localDateKey
 );
-const dialogue = deriveDialogue(
-  effectiveFriendState,
-  timeSignal.localDateKey
-);
+const dialogue = deriveDialogue(derivedFriendMoment);
 const presentation = derivePresentation(
   effectiveFriendState,
   derivedFriendMoment,

@@ -37,6 +37,36 @@ const FRIEND_STATES = {
   SLEEPING: "sleeping"
 };
 
+const FRIEND_MOMENTS = {
+  WAKING: "waking",
+  GENTLE_START: "gentle_start",
+  FOCUSED: "focused",
+  QUIET_BREAK: "quiet_break",
+  WINDING_DOWN: "winding_down",
+  DEEP_REST: "deep_rest"
+};
+
+const FRIEND_MOMENT_POOLS = {
+  [FRIEND_STATES.MORNING]: [
+    FRIEND_MOMENTS.WAKING,
+    FRIEND_MOMENTS.GENTLE_START
+  ],
+  [FRIEND_STATES.CODING]: [
+    FRIEND_MOMENTS.FOCUSED,
+    FRIEND_MOMENTS.QUIET_BREAK
+  ],
+  [FRIEND_STATES.SLEEPING]: [
+    FRIEND_MOMENTS.DEEP_REST,
+    FRIEND_MOMENTS.WINDING_DOWN
+  ]
+};
+
+const FRIEND_MOMENT_STATE_OFFSETS = {
+  [FRIEND_STATES.MORNING]: 0,
+  [FRIEND_STATES.CODING]: 1,
+  [FRIEND_STATES.SLEEPING]: 2
+};
+
 function getRawTimeSignal() {
   return new Date();
 }
@@ -259,6 +289,19 @@ const DIALOGUE_STATE_OFFSETS = {
   [FRIEND_STATES.SLEEPING]: 2
 };
 
+function deriveFriendMoment(friendState, localDateKey) {
+  const pool = FRIEND_MOMENT_POOLS[friendState];
+
+  if (!pool) {
+    return FRIEND_MOMENTS.DEEP_REST;
+  }
+
+  const offset = FRIEND_MOMENT_STATE_OFFSETS[friendState];
+  const index = (localDateKey + offset) % pool.length;
+
+  return pool[index];
+}
+
 function deriveDialogue(friendState, localDateKey) {
   const effectiveState = DIALOGUE_POOLS[friendState]
     ? friendState
@@ -270,11 +313,12 @@ function deriveDialogue(friendState, localDateKey) {
   return pool[index];
 }
 
-function derivePresentation(friendState, dialogue) {
+function derivePresentation(friendState, friendMoment, dialogue) {
   const visual = VISUAL_STATES[friendState] || VISUAL_STATES[FRIEND_STATES.SLEEPING];
 
   return {
     friendState,
+    friendMoment,
     dialogue,
     visual
   };
@@ -291,12 +335,17 @@ const effectiveFriendState = resolveEffectiveFriendState(
   derivedFriendState,
   DEV_OVERRIDE_STATE
 );
+const derivedFriendMoment = deriveFriendMoment(
+  effectiveFriendState,
+  timeSignal.localDateKey
+);
 const dialogue = deriveDialogue(
   effectiveFriendState,
   timeSignal.localDateKey
 );
 const presentation = derivePresentation(
   effectiveFriendState,
+  derivedFriendMoment,
   dialogue
 );
 

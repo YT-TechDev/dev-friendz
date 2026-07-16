@@ -12,7 +12,7 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D002
 
 - Status: Accepted
-- Decision: Medium is the only supported widget size through the current v0.2.0 implementation.
+- Decision: Medium is the only supported widget size through the current v0.3.0 implementation.
 - Rationale: The current implementation and owner validation target the Medium widget size.
 - Consequences: Documentation and validation must not claim Small or Large support.
 
@@ -54,14 +54,14 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D008
 
 - Status: Accepted
-- Decision: The current v0.2.0 widget requires no backend.
+- Decision: The current v0.3.0 widget requires no backend.
 - Rationale: The current widget is local and deterministic.
 - Consequences: Backend services, cloud synchronization, and server setup are out of scope for the current widget.
 
 ## D009
 
 - Status: Accepted
-- Decision: The current v0.2.0 widget requires no account or credential.
+- Decision: The current v0.3.0 widget requires no account or credential.
 - Rationale: The current widget makes no authenticated requests and has no private integration.
 - Consequences: Tokens, PATs, API secrets, credentials, and private repository data must not be committed or required.
 
@@ -89,9 +89,9 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D013
 
 - Status: Accepted
-- Decision: Runtime-sensitive changes require real-device validation before merging.
-- Rationale: ScriptWidget behavior must be confirmed on device, not only by source inspection.
-- Consequences: Pull Requests that affect rendering or runtime behavior must report device checks or remaining owner checks.
+- Decision: Runtime-sensitive milestone behavior must pass an explicit real-device gate before release readiness; individual scoped Pull Requests may defer device checks only when the later gate is identified and remaining owner validation is reported.
+- Rationale: ScriptWidget behavior must be confirmed on device, not only by source inspection, while related scoped changes may be batched into one owner-controlled milestone validation pass.
+- Consequences: Documentation and Pull Requests must distinguish focused source checks from owner-controlled device validation, must name any deferred validation gate, and must not treat batching as permission to skip runtime validation.
 
 
 ## D014
@@ -104,9 +104,9 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D015
 
 - Status: Accepted
-- Decision: v0.2.0 uses exactly `morning`, `coding`, and `sleeping`, and normalized schedule boundaries determine the half-open intervals.
+- Decision: The current schedule model uses exactly `morning`, `coding`, and `sleeping`; moments do not add schedule states, and normalized schedule boundaries determine the half-open intervals.
 - Rationale: Three explicit states are small, deterministic, complete, and character-readable.
-- Consequences: Every local hour maps to exactly one state, state names remain stable for current presentation and dialogue maps, and adding another state requires a future explicit design decision.
+- Consequences: Every local hour maps to exactly one state, state names remain stable for current moment derivation, presentation, and dialogue maps, and adding another schedule state requires a future explicit design decision.
 
 ## D016
 
@@ -118,13 +118,49 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D017
 
 - Status: Accepted
-- Decision: Dialogue is selected deterministically from local calendar date and effective Friend state.
-- Rationale: Deterministic dialogue prevents refresh flicker without storage, networking, or uncontrolled randomness.
-- Consequences: The same local date and state produce the same line, dialogue may vary across dates, and `Math.random()` and persistence are unnecessary.
+- Decision: Dialogue is selected deterministically from the effective Friend moment; the same local date and effective state produce the same moment and therefore the same dialogue.
+- Rationale: Deterministic moment-aware dialogue prevents refresh flicker without storage, networking, or uncontrolled randomness.
+- Consequences: The same local date and effective state produce the same moment and line, dialogue may vary across dates when the sibling moment is selected, and `Math.random()` and persistence are unnecessary.
 
 ## D018
 
 - Status: Accepted
-- Decision: `DEV_OVERRIDE_STATE` is development/testing-only, exists outside `CONFIG`, and is committed as `null`.
+- Decision: `DEV_OVERRIDE_STATE` is development/testing-only, exists outside `CONFIG`, resolves before moment derivation, and is committed as `null`.
 - Rationale: All states must be reproducible for device validation without exposing a user-facing forced-state feature.
 - Consequences: Only temporary local validation copies use forced values, unsupported override values preserve normal derived behavior, and release and installation source must keep `null`.
+
+
+## D019
+
+- Status: Accepted
+- Decision: v0.3.0 defines exactly two deterministic Friend moments per existing daily state: `morning` has `waking` and `gentle_start`, `coding` has `focused` and `quiet_break`, and `sleeping` has `winding_down` and `deep_rest`.
+- Rationale: Small state-compatible variations add character expressiveness without replacing the established three-state schedule.
+- Consequences: Moments are selected from effective state and local date, moments do not create new schedule states, and adding or removing moment identifiers requires a future explicit decision.
+
+## D020
+
+- Status: Accepted
+- Decision: Friend moment remains separate from visual state and platform UI; explicit visual and dialogue mappings consume the same effective moment, and JSX consumes presentation data.
+- Rationale: Keeping the domain moment distinct from presentation prevents time, schedule, or moment-selection logic from spreading through the UI tree.
+- Consequences: Moment-specific presentation belongs in explicit mappings, and visual/dialogue changes must preserve the shared effective-moment boundary.
+
+## D021
+
+- Status: Accepted
+- Decision: Each current Friend moment has one intentional dialogue line selected explicitly and deterministically.
+- Rationale: One line per moment keeps the widget calm, readable, and easy to validate while avoiding random or user-editable copy.
+- Consequences: Rest and break copy remains supportive, dialogue is not selected from state-level pools, and changing dialogue requires updating the explicit moment mapping.
+
+## D022
+
+- Status: Accepted
+- Decision: `DEV_OVERRIDE_MOMENT` is validation-only, outside `CONFIG`, committed as `null`, and accepted only when compatible with the effective state's domain moment pool.
+- Rationale: Reproducible six-moment validation is needed without exposing moment forcing as user configuration or breaking state/moment consistency.
+- Consequences: Unknown or incompatible moment override values preserve derived behavior; release and installation source must keep `DEV_OVERRIDE_MOMENT` as `null`.
+
+## D023
+
+- Status: Accepted
+- Decision: Issues #17 through #19 used focused source checks, and Issue #20 provided one owner-controlled six-fixture real-device gate plus default restoration for the v0.3.0 milestone sequence.
+- Rationale: Batched validation reduced repeated owner device cycles while still validating the integrated runtime-sensitive behavior before documentation and release readiness.
+- Consequences: This pattern does not permit skipping runtime validation; future runtime-sensitive milestone behavior still needs explicit owner-controlled device validation or clearly reported remaining owner checks.

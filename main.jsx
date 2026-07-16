@@ -9,6 +9,11 @@ const CONFIG = {
 const DEV_OVERRIDE_STATE = null;
 // Temporary validation values: "morning", "coding", "sleeping"
 
+const DEV_OVERRIDE_MOMENT = null;
+// Temporary validation values:
+// "waking", "gentle_start", "focused",
+// "quiet_break", "winding_down", "deep_rest"
+
 const DEFAULT_SCHEDULE = {
   morningStartHour: 6,
   codingStartHour: 10,
@@ -386,6 +391,24 @@ function deriveFriendMoment(friendState, localDateKey) {
   return pool[index];
 }
 
+function resolveEffectiveFriendMoment(
+  effectiveFriendState,
+  derivedFriendMoment,
+  overrideMoment
+) {
+  const compatibleMoments =
+    FRIEND_MOMENT_POOLS[effectiveFriendState];
+
+  if (
+    compatibleMoments &&
+    compatibleMoments.includes(overrideMoment)
+  ) {
+    return overrideMoment;
+  }
+
+  return derivedFriendMoment;
+}
+
 function deriveDialogue(friendMoment) {
   return (
     DIALOGUE_BY_MOMENT[friendMoment] ||
@@ -421,10 +444,16 @@ const derivedFriendMoment = deriveFriendMoment(
   effectiveFriendState,
   timeSignal.localDateKey
 );
-const dialogue = deriveDialogue(derivedFriendMoment);
+const effectiveFriendMoment =
+  resolveEffectiveFriendMoment(
+    effectiveFriendState,
+    derivedFriendMoment,
+    DEV_OVERRIDE_MOMENT
+  );
+const dialogue = deriveDialogue(effectiveFriendMoment);
 const presentation = derivePresentation(
   effectiveFriendState,
-  derivedFriendMoment,
+  effectiveFriendMoment,
   dialogue
 );
 

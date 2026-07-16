@@ -57,8 +57,8 @@ Moment derivation uses the effective Friend state, a numeric local date key, and
 
 | State | Moment | Character cue | Dialogue |
 | --- | --- | --- | --- |
-| `morning` | `waking` | More open eyes, waking posture, gentle room emphasis | `Morning. Take it easy.` |
-| `morning` | `gentle_start` | Softer start posture with calmer monitor/lamp balance | `A gentle start.` |
+| `morning` | `waking` | Partially open shorter eyes, slightly lower/wider posture, reduced monitor and lamp emphasis | `Morning. Take it easy.` |
+| `morning` | `gentle_start` | Open taller eyes, more upright posture, stronger monitor and lamp emphasis | `A gentle start.` |
 | `coding` | `focused` | Narrower eyes, more upright posture, stronger monitor emphasis | `I'll keep you company.` |
 | `coding` | `quiet_break` | Rounder/eased eyes, relaxed posture, reduced monitor emphasis | `A small pause is okay.` |
 | `sleeping` | `winding_down` | Half-closed eyes, intermediate resting posture, dimmer monitor/lamp emphasis | `The room can wait.` |

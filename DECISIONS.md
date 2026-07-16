@@ -89,9 +89,9 @@ This file records accepted decisions that already constrain Dev Friendz. It is n
 ## D013
 
 - Status: Accepted
-- Decision: Runtime-sensitive changes require real-device validation before merging.
-- Rationale: ScriptWidget behavior must be confirmed on device, not only by source inspection.
-- Consequences: Pull Requests that affect rendering or runtime behavior must report device checks or remaining owner checks.
+- Decision: Runtime-sensitive milestone behavior must pass an explicit real-device gate before release readiness; individual scoped Pull Requests may defer device checks only when the later gate is identified and remaining owner validation is reported.
+- Rationale: ScriptWidget behavior must be confirmed on device, not only by source inspection, while related scoped changes may be batched into one owner-controlled milestone validation pass.
+- Consequences: Documentation and Pull Requests must distinguish focused source checks from owner-controlled device validation, must name any deferred validation gate, and must not treat batching as permission to skip runtime validation.
 
 
 ## D014

@@ -1,4 +1,7 @@
 const CONFIG = {
+  friend: {
+    name: "Friend"
+  },
   schedule: {
     morningStartHour: 6,
     codingStartHour: 10,
@@ -13,6 +16,10 @@ const DEV_OVERRIDE_MOMENT = null;
 // Temporary validation values:
 // "waking", "gentle_start", "focused",
 // "quiet_break", "winding_down", "deep_rest"
+
+const DEFAULT_FRIEND_IDENTITY = {
+  name: "Friend"
+};
 
 const DEFAULT_SCHEDULE = {
   morningStartHour: 6,
@@ -87,6 +94,39 @@ function normalizeTimeSignal(rawSignal) {
   };
 }
 
+function getDefaultFriendIdentity() {
+  return { ...DEFAULT_FRIEND_IDENTITY };
+}
+
+function normalizeFriendIdentity(rawFriend) {
+  if (
+    !rawFriend ||
+    typeof rawFriend !== "object" ||
+    Array.isArray(rawFriend) ||
+    typeof rawFriend.name !== "string"
+  ) {
+    return getDefaultFriendIdentity();
+  }
+
+  const trimmedName = rawFriend.name.trim();
+  const codePointCount = Array.from(trimmedName).length;
+  const hasControlCharacters = /[\u0000-\u001F\u007F-\u009F\u2028\u2029]/.test(
+    trimmedName
+  );
+
+  if (
+    codePointCount < 1 ||
+    codePointCount > 10 ||
+    hasControlCharacters
+  ) {
+    return getDefaultFriendIdentity();
+  }
+
+  return {
+    name: trimmedName
+  };
+}
+
 function normalizeSchedule(rawSchedule) {
   if (
     !rawSchedule ||
@@ -132,14 +172,15 @@ function normalizeSchedule(rawSchedule) {
 }
 
 function normalizeConfig(rawConfig) {
-  const rawSchedule =
+  const hasConfigObject =
     rawConfig &&
     typeof rawConfig === "object" &&
-    !Array.isArray(rawConfig)
-      ? rawConfig.schedule
-      : undefined;
+    !Array.isArray(rawConfig);
+  const rawFriend = hasConfigObject ? rawConfig.friend : undefined;
+  const rawSchedule = hasConfigObject ? rawConfig.schedule : undefined;
 
   return {
+    friend: normalizeFriendIdentity(rawFriend),
     schedule: normalizeSchedule(rawSchedule)
   };
 }

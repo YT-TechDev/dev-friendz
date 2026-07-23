@@ -457,7 +457,7 @@ function deriveDialogue(friendMoment) {
   );
 }
 
-function derivePresentation(friendState, friendMoment, dialogue) {
+function derivePresentation(friendState, friendMoment, friendIdentity, dialogue) {
   const visual =
     VISUAL_MOMENTS[friendMoment] ||
     VISUAL_MOMENTS[FRIEND_MOMENTS.DEEP_REST];
@@ -465,6 +465,7 @@ function derivePresentation(friendState, friendMoment, dialogue) {
   return {
     friendState,
     friendMoment,
+    friendName: friendIdentity.name,
     dialogue,
     visual
   };
@@ -495,6 +496,7 @@ const dialogue = deriveDialogue(effectiveFriendMoment);
 const presentation = derivePresentation(
   effectiveFriendState,
   effectiveFriendMoment,
+  config.friend,
   dialogue
 );
 
@@ -543,7 +545,7 @@ $render(
 
     <zstack frame="120,120" background={colors.panel} radius="16">
       <vstack spacing="8">
-        <text font="caption" color={colors.muted}>DEV FRIENDZ</text>
+        <text font="caption" color={colors.muted}>{presentation.friendName}</text>
         <roundedrect frame="48,3" color={colors.accent} radius="2" />
         <text font="headline" color={colors.text}>{presentation.dialogue}</text>
       </vstack>
